@@ -1,0 +1,26 @@
+{
+  "name": "cssutil",
+  "version": "0.0.1",
+  "description": "A utility tool for building/minifying/concatenating LESS and CSS files",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mamboer/cssutil.git"
+  },
+  "keywords": [ "css", "less", "build", "minify", "concatenate" ],
+  "author": "LevinWong",
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "dependencies": {
+    "less": "~ 1.3.3",
+    "clean-css": "~ 0.9.1",
+    "async": "~ 0.1.22"
+  },
+  "devDependencies": {
+    "chai": "*",
+    "mocha": "*"
+  }
+}
