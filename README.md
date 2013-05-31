@@ -5,7 +5,7 @@ A NodeJs package for,
 
 1. Compiling LESS files to css files.
 2. Concatenating multiple CSS file into a single one.
-3. Minifying css via <a href="https://github.com/GoalSmashers/clean-css" target="_blank">clear-css></a>
+3. Minifying css via <a href="https://github.com/GoalSmashers/clean-css" target="_blank">clear-css</a>
 
 Demo
 -------

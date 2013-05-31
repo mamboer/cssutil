@@ -1,12 +1,84 @@
 module.exports=(function(){
 
-    var less = require('less'),
+    var pub ={},
+        less = require('less'),
         cleanCSS = require('clean-css').process,
         async = require('async'),
         fs = require('fs'),
-        path = require('path');
+        path = require('path'),
+        regexTpl1 = /@import url\(([^)]*)\);?/gi,
+        regexTpl2 = /^(https?:|\/).*/i;
 
-    var pub ={};
+    /**
+     * Convert a relative path to the absolute one referring to another absolute file path
+     * @param {String} relativePath e.g ../../xx.css
+     * @param {String} refAbsPath e.g e:\foo\bar\yy.css 
+     */
+    var convertToAbsFilePath = function(relativePath,refAbsPath){
+
+        if (!relativePath||relativePath.length===0) {
+            return null;
+        };
+
+        var flags1 = refAbsPath.substr(0,refAbsPath.lastIndexOf('\\')).split('\\'),
+            flags2 = relativePath.split('/');
+
+        // having the same parent path!
+        if (flags2.length===1||flags2[0]!=='..') {
+            return flags1.concat(flags2).join('\\');
+        };
+
+        while(flags2[0]==='..'){
+            flags2.shift();
+            flags1.pop();
+        };
+        return flags1.concat(flags2).join('\\');
+    };
+
+    /**
+     * merge imported css files
+     * @param {String} file css file path
+     * @param {Function} cbk callback
+     */
+    pub.merge = function(file,cbk){
+        fs.readFile(file, 'utf8', function(err,txt){
+            if (err) {
+                return cbk(err);
+            };
+            var importedFiles = [],
+                match;
+            while( (match=regexTpl1.exec(txt)) ){
+                importedFiles.push(match[1].replace(/'/g,'').replace(/"/g,''));
+            };
+            var len = importedFiles.length;
+            //No imported url!
+            if (len===0) {
+                return cbk(null,txt);
+            };
+
+            var url=null,
+                fullPath = null;
+
+            for (var i = 0; i < len; i++) {
+                url = importedFiles[i];
+                //ignore those imported url with absolute path!
+                if ( regexTpl2.test(url) ) {
+                    continue;
+                };
+                //get the full path
+                fullPath = convertToAbsFilePath(url,file);
+                //recursive
+                pub.merge(fullPath,function(err,txt1){
+                    if (err) {
+                        txt=txt.replace(url,'/*Error when parsing file:%,$*/'.replace('%',fullPath).replace('$',err.toString()));
+                        return;
+                    };
+                    txt = txt.replace(url,'/*S-%*/\r\n$\r\n/*E-%*/'.replace(/%/g,fullPath).replace('$',txt1));
+                });
+            };
+
+        });
+    };
 
     /**
      * building files
@@ -27,7 +99,8 @@ module.exports=(function(){
                 if (path.extname(file).toLowerCase() === '.less') {
                     pub.buildLess(file, opts, cbk1);
                 } else {
-                    fs.readFile(file, 'utf8', cbk1);
+                    //fs.readFile(file, 'utf8', cbk1);
+                    pub.merge(file,cbk1);
                 }
             },
             function complete(err, files1) {

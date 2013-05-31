@@ -41,6 +41,28 @@ describe('build-css', function() {
         });
     });
 
+    it('should merge imported CSS files', function(done) {
+        var opts = { minify: false };
+        cssutil.build([
+            'file3.css'
+        ], opts, function(e, css) {
+            expect(e).to.equal(null);
+
+            // Normalize line endings
+            css = css.replace(/\r\n/gi, '\n');
+
+            expect(css).to.equal(
+                'h1 {\n' +
+                '    color: #BDF17E;\n' +
+                '}\n' +
+                '\n' +
+                'h2 {\n' +
+                '    color: #83B1FC;\n' +
+                '}\n');
+            done();
+        });
+    });
+
     it('should compile and minify LESS files', function(done) {
         cssutil.build([
             'test.less'
