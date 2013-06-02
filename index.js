@@ -23,6 +23,8 @@ module.exports=(function(){
         var flags1 = refAbsPath.substr(0,refAbsPath.lastIndexOf('\\')).split('\\'),
             flags2 = relativePath.split('/');
 
+        flags1 = flags1[0]===""?[]:flags1;
+
         // having the same parent path!
         if (flags2.length===1||flags2[0]!=='..') {
             return flags1.concat(flags2).join('\\');
@@ -41,42 +43,60 @@ module.exports=(function(){
      * @param {Function} cbk callback
      */
     pub.merge = function(file,cbk){
+
+        //ignore those imported url with absolute path!
+        if ( regexTpl2.test(file) ) {
+            return cbk(null,file);
+        };
+
         fs.readFile(file, 'utf8', function(err,txt){
             if (err) {
-                return cbk(err);
+                return cbk(null,'/*%,$*/'.replace('%',file).replace('$',err.toString()));
             };
             var importedFiles = [],
+                importedFilePathes = [],
+                importedTxtes = [],
                 match;
             while( (match=regexTpl1.exec(txt)) ){
                 importedFiles.push(match[1].replace(/'/g,'').replace(/"/g,''));
+                importedTxtes.push(match[0]);
             };
             var len = importedFiles.length;
             //No imported url!
             if (len===0) {
                 return cbk(null,txt);
             };
-
-            var url=null,
-                fullPath = null;
-
+            // Get the full file pathes
+            var url = null;
             for (var i = 0; i < len; i++) {
                 url = importedFiles[i];
                 //ignore those imported url with absolute path!
                 if ( regexTpl2.test(url) ) {
+                    importedFilePathes.push(url);
                     continue;
                 };
                 //get the full path
-                fullPath = convertToAbsFilePath(url,file);
-                //recursive
-                pub.merge(fullPath,function(err,txt1){
-                    if (err) {
-                        txt=txt.replace(url,'/*Error when parsing file:%,$*/'.replace('%',fullPath).replace('$',err.toString()));
-                        return;
-                    };
-                    txt = txt.replace(url,'/*S-%*/\r\n$\r\n/*E-%*/'.replace(/%/g,fullPath).replace('$',txt1));
-                });
+                importedFilePathes.push(convertToAbsFilePath(url,file));
             };
+            async.map(
+                importedFilePathes,
+                function process(file1, cbk1) {
+                    pub.merge(file1,cbk1);
+                },
+                function complete(err1, files1) {
+                    if (err1) { return cbk(err1); }
 
+                    for(var i=0;i<len;i++){
+                        //ignore those imported url with absolute path!
+                        if (files1[i]===importedFilePathes[i]) {
+                            continue;
+                        };
+                        txt = txt.replace(importedTxtes[i],'/*S-%*/\r\n$\r\n/*E-%*/'.replace(/%/g,importedFilePathes[i]).replace('$',files1[i]));
+                    };
+
+                    cbk(null,txt);
+                }
+            );
         });
     };
 
