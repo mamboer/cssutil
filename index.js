@@ -135,6 +135,14 @@ module.exports=(function(){
         );
     };
     /**
+     * compress css raw text
+     * @param {String} cssTxt css raw text
+     */
+    pub.compress = function(cssTxt){
+        cssTxt = cleanCSS(cssTxt);
+        return cssTxt;
+    };
+    /**
      * build less file
      * @param {String} file less file path
      * @param {Object} options build configuration
