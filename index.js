@@ -3,6 +3,7 @@ module.exports=(function(){
     var pub ={},
         less = require('less'),
         cleanCSS = require('clean-css').process,
+        ycssmin = require('ycssmin').cssmin,
         async = require('async'),
         fs = require('fs'),
         path = require('path'),
@@ -128,7 +129,7 @@ module.exports=(function(){
 
                 var src = files1.join('\n');
                 if (opts.minify !== false) {
-                    src = cleanCSS(src);
+                    src = pub.compress(src,opts.compressProviderId);
                 }
                 cbk(null,src);
             }
@@ -137,9 +138,18 @@ module.exports=(function(){
     /**
      * compress css raw text
      * @param {String} cssTxt css raw text
+     * @param {Int} compressProviderId compress provider id. default is 0 (clean-css), 1 stands for ycssmin
      */
-    pub.compress = function(cssTxt){
-        cssTxt = cleanCSS(cssTxt);
+    pub.compress = function(cssTxt,compressProviderId){
+        
+        switch(compressProviderId){
+            case 1:
+                cssTxt = ycssmin(cssTxt);
+                break;
+            default:
+                cssTxt = cleanCSS(cssTxt);
+                break;
+        };//switch
         return cssTxt;
     };
     /**

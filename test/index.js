@@ -90,7 +90,7 @@ describe('cssutil-tests', function() {
                 '}\n'+
                 '/*E-file3.css*/\n'+
                 '/*S-404.css*/\n'+
-                "/*404.css,Error: ENOENT, open 'e:\\Camp\\Documents\\GitHub\\cssutil\\test\\404.css'*/\n"+
+                "/*404.css,Error: ENOENT, open 'e:\\Camp\\Documents\\GitHub\\mamboer\\cssutil\\test\\404.css'*/\n"+
                 '/*E-404.css*/\n'+
                 '/*S-imports\\_file1.css*/\n'+
                 '.imports_file1{\n'+
@@ -122,6 +122,17 @@ describe('cssutil-tests', function() {
         ], opts, function(e, css) {
             expect(e).to.equal(null);
             expect(css).to.equal('.foo{display:awesome}');
+            done();
+        });
+    });
+    //test7
+    it('should minify using ycssmin', function(done) {
+        var opts = { compressProviderId: 1 };
+        cssutil.build([
+            'file1.css'
+        ], opts, function(e, css) {
+            expect(e).to.equal(null);
+            expect(css).to.equal('h1{color:#bdf17e}');
             done();
         });
     });
