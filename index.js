@@ -8,7 +8,9 @@ module.exports=(function(){
         fs = require('fs'),
         path = require('path'),
         regexTpl1 = /@import url\(([^)]*)\);?/gi,
-        regexTpl2 = /^(https?:|\/).*/i;
+        regexTpl2 = /^(https?:|\/).*/i,
+        regexImgTpl1 = /background:url\(([^)]*)\)?/gi,
+        regexImgTpl2 = /background-image:url\(([^)]*)\)?/gi,
 
     /**
      * Convert a relative path to the absolute one referring to another absolute file path
@@ -36,6 +38,10 @@ module.exports=(function(){
             flags1.pop();
         };
         return flags1.concat(flags2).join('\\');
+    };
+
+    var processRelativeImg = function(rawCss,parentFile){
+
     };
 
     /**
