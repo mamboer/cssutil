@@ -10,7 +10,7 @@ module.exports=(function(){
         regexTpl1 = /@import url\(([^)]*)\);?/gi,
         regexTpl2 = /^(https?:|\/).*/i,
         regexImgTpl1 = /background:url\(([^)]*)\)?/gi,
-        regexImgTpl2 = /background-image:url\(([^)]*)\)?/gi,
+        regexImgTpl2 = /background-image:url\(([^)]*)\)?/gi;
 
     /**
      * Convert a relative path to the absolute one referring to another absolute file path
