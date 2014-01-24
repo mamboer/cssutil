@@ -1,6 +1,6 @@
 {
   "name": "cssutil",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "A utility tool for building/minifying/concatenating LESS and CSS files",
   "main": "index.js",
   "scripts": {

@@ -1,17 +1,16 @@
-// Firstly, On test case 4, you should adapt the path 'e:\\Camp\\Documents\\GitHub\\cssutil\\test\\404.css' to your local one!!
-// Then run `npm test`
+// run `npm test`
 var expect = require('chai').expect,
     cssutil = require('../index');
 
 // Force current directory
-process.chdir(__dirname);
+//process.chdir(__dirname);
 
 describe('cssutil-tests', function() {
     //test1
     it ('should concatenate and minify CSS', function(done) {
         cssutil.build([
-            'file1.css',
-            'file2.css'
+            __dirname+'\\'+'file1.css',
+            __dirname+'\\'+'file2.css'
         ], function(e, css) {
             expect(e).to.equal(null);
             expect(css).to.equal('h1{color:#BDF17E}h2{color:#83B1FC}');
@@ -22,8 +21,8 @@ describe('cssutil-tests', function() {
     it('should just concatenate CSS', function(done) {
         var opts = { minify: false };
         cssutil.build([
-            'file1.css',
-            'file2.css'
+            __dirname+'\\'+'file1.css',
+            __dirname+'\\'+'file2.css'
         ], opts, function(e, css) {
             expect(e).to.equal(null);
 
@@ -45,7 +44,7 @@ describe('cssutil-tests', function() {
     it('should merge imported CSS files', function(done) {
         var opts = { minify: false };
         cssutil.build([
-            'file3.css'
+            __dirname+'\\'+'file3.css'
         ], opts, function(e, css) {
             expect(e).to.equal(null);
 
@@ -53,11 +52,11 @@ describe('cssutil-tests', function() {
             css = css.replace(/\r\n/gi, '\n');
 
             expect(css).to.equal(
-                '/*S-file1.css*/\n'+
+                '/*S-'+__dirname+'\\'+'file1.css*/\n'+
                 'h1 {\n' +
                 '    color: #BDF17E;\n' +
                 '}\n' +
-                '\n/*E-file1.css*/'+
+                '\n/*E-'+__dirname+'\\'+'file1.css*/'+
                 '\n'+
                 '.test3 {\n' +
                 '    height: 1px;\n' +
@@ -69,7 +68,7 @@ describe('cssutil-tests', function() {
     it('should merge complex imported CSS files', function(done) {
         var opts = { minify: false };
         cssutil.build([
-            'file4.css'
+            __dirname+'\\'+'file4.css'
         ], opts, function(e, css) {
             expect(e).to.equal(null);
 
@@ -78,25 +77,29 @@ describe('cssutil-tests', function() {
 
             expect(css).to.equal(
                 '@import url(http://static.gtimg.com/icson/css/common/v0/gb.css);\n'+
-                '/*S-file3.css*/\n'+
-                '/*S-file1.css*/\n'+
+                '/*S-'+__dirname+'\\'+'file3.css*/\n'+
+                '/*S-'+__dirname+'\\'+'file1.css*/\n'+
                 'h1 {\n' +
                 '    color: #BDF17E;\n' +
                 '}\n' +
-                '\n/*E-file1.css*/'+
+                '\n/*E-'+__dirname+'\\'+'file1.css*/'+
                 '\n'+
                 '.test3 {\n' +
                 '    height: 1px;\n' +
                 '}\n'+
-                '/*E-file3.css*/\n'+
-                '/*S-404.css*/\n'+
-                "/*404.css,Error: ENOENT, open 'e:\\Camp\\Documents\\GitHub\\mamboer\\cssutil\\test\\404.css'*/\n"+
-                '/*E-404.css*/\n'+
-                '/*S-imports\\_file1.css*/\n'+
+                '/*E-'+__dirname+'\\'+'file3.css*/\n'+
+                '/*S-'+__dirname+'\\'+'404.css*/\n'+
+                "/*"+__dirname+'\\'+"404.css,Error: ENOENT, open '"+__dirname+'\\'+"404.css'*/\n"+
+                '/*E-'+__dirname+'\\'+'404.css*/\n'+
+                '/*S-'+__dirname+'\\'+'imports\\_file1.css*/\n'+
+                '/*S-'+__dirname+'\\'+'imports\\common\\icon.css*/\n'+
+                '.ico{background-image: url(../img/icon.png);}\n'+
+                '/*E-'+__dirname+'\\'+'imports\\common\\icon.css*/\n'+
                 '.imports_file1{\n'+
                 '    height:1px;\n'+
+                '    background: url(../img/test.jpg) no-repeat;\n'+
                 '}\n'+
-                '/*E-imports\\_file1.css*/\n'+
+                '/*E-'+__dirname+'\\'+'imports\\_file1.css*/\n'+
                 '.test4 {\n'+
                 '    height: 1px;\n'+
                 '}'
@@ -107,7 +110,7 @@ describe('cssutil-tests', function() {
     //test5
     it('should compile and minify LESS files', function(done) {
         cssutil.build([
-            'test.less'
+            __dirname+'\\'+'test.less'
         ], function(e, css) {
             expect(e).to.equal(null);
             expect(css).to.equal('h3{color:#FC92A2}');
@@ -118,7 +121,7 @@ describe('cssutil-tests', function() {
     it('should use specified LESS import paths', function(done) {
         var opts = { paths: ['imports'] };
         cssutil.build([
-            'import.less'
+            __dirname+'\\'+'import.less'
         ], opts, function(e, css) {
             expect(e).to.equal(null);
             expect(css).to.equal('.foo{display:awesome}');
@@ -129,7 +132,7 @@ describe('cssutil-tests', function() {
     it('should minify using ycssmin', function(done) {
         var opts = { compressProviderId: 1 };
         cssutil.build([
-            'file1.css'
+            __dirname+'\\'+'file1.css'
         ], opts, function(e, css) {
             expect(e).to.equal(null);
             expect(css).to.equal('h1{color:#bdf17e}');
